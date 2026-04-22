@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Corporate | Simulación de Consumo</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- CSS Externo -->
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <link rel="stylesheet" th:href="@{/css/consumo.css}">
+</head>
+<body>
+
+    <header class="topbar">
+        <div class="logo">
+            <span class="logo-sc">SC</span>
+            <h1>Smart Corporate</h1>
+        </div>
+        <nav class="user-profile">
+            <div class="alert-badge"><i class="fa-solid fa-bell"></i></div>
+            <div class="profile-info">
+                <span class="user-name">Admin Usuario</span>
+                <span class="user-role">Administrador</span>
+            </div>
+            <div class="avatar">A</div>
+        </nav>
+    </header>
+
+    <main class="dashboard-container">
+        <section class="page-header">
+            <h2>Simulación de Consumo Energético</h2>
+            <p>Monitoreo y predicción de recursos corporativos por sede.</p>
+        </section>
+
+        <!-- Mensajes Dinámicos -->
+        <div id="statusMessage" class="status-message" th:if="${mensaje}" th:text="${mensaje}"></div>
+        <div id="errorMessage" class="status-message error" th:if="${error}" th:text="${error}"></div>
+
+        <div class="simulation-grid">
+            <!-- Formulario de Registro Manual -->
+            <article class="card form-card">
+                <div class="card-header">
+                    <i class="fa-solid fa-bolt-lightning"></i>
+                    <h3>Registro Manual</h3>
+                </div>
+                <form id="consumoForm" th:action="@{/simulacion/registrar}" th:object="${nuevoConsumo}" method="post">
+                    <div class="form-group">
+                        <label for="sede">Sede Corporativa</label>
+                        <input type="text" id="sede" th:field="*{sede}" placeholder="Ej: Lima Norte" required>
+                        <small id="errorSede" class="field-error"></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="tipoRecurso">Tipo de Recurso</label>
+                        <select id="tipoRecurso" th:field="*{tipoRecurso}">
+                            <option value="Electricidad">Electricidad</option>
+                            <option value="Agua">Agua</option>
+                            <option value="Gas Natural">Gas Natural</option>
+                            <option value="Conectividad">Conectividad</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="monto">Monto Consumido (S/.)</label>
+                        <input type="number" step="0.01" id="monto" th:field="*{monto}" placeholder="0.00" required>
+                        <small id="errorMonto" class="field-error"></small>
+                    </div>
+                    <button type="submit" class="btn-primary">Registrar Consumo</button>
+                </form>
+            </article>
+
+            <!-- Panel de Acciones de Simulación -->
+            <article class="card actions-card">
+                <div class="card-header">
+                    <i class="fa-solid fa-gears"></i>
+                    <h3>Motor de Simulación</h3>
+                </div>
+                <div class="action-buttons">
+                    <form th:action="@{/simulacion/simular}" method="post">
+                        <button type="submit" id="btnSimular" class="btn-simulation">
+                            <i class="fa-solid fa-play"></i> Simular 5 Registros
+                        </button>
+                    </form>
+                    <form th:action="@{/simulacion/limpiar}" method="post">
+                        <button type="submit" class="btn-outline">
+                            <i class="fa-solid fa-trash-can"></i> Limpiar Tabla
+                        </button>
+                    </form>
+                </div>
+                <p class="hint">El motor genera datos aleatorios basados en sedes activas y promedios históricos.</p>
+            </article>
+        </div>
+
+        <!-- Tabla de Datos -->
+        <section class="card table-card">
+            <div class="card-header">
+                <i class="fa-solid fa-list-check"></i>
+                <h3>Historial de Consumos Registrados</h3>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Sede</th>
+                            <th>Recurso</th>
+                            <th>Monto</th>
+                            <th style="text-align: center;">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="c : ${consumos}">
+                            <td th:text="${c.sede}">Sede</td>
+                            <td>
+                                <span class="recurso-tag" th:text="${c.tipoRecurso}">Recurso</span>
+                            </td>
+                            <td class="monto-cell" th:text="'S/. ' + ${#numbers.formatDecimal(c.monto, 1, 2)}">0.00</td>
+                            <td style="text-align: center;">
+                                <span class="status-tag">Auditado</span>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(consumos)}">
+                            <td colspan="4" class="empty-state">No hay datos registrados. Usa el botón de simulación.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <p>&copy; 2026 Smart Corporate - Sistema de Optimización de Recursos. Todos los derechos reservados.</p>
+    </footer>
+
+    <!-- JS Externo -->
+    <script th:src="@{/js/consumo.js}"></script>
+</body>
+</html>
