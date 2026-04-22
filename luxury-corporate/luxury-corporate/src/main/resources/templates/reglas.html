@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Corporate | Reglas de Negocio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <link rel="stylesheet" th:href="@{/css/reglas.css}">
+</head>
+<body>
+
+    <div class="main-layout">
+        <!-- Sidebar Reutilizado -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-box">SC</div>
+                <div class="logo-text">
+                    <span class="brand">SMART CORPORATE</span>
+                    <span class="tagline">Resource & Financial Optimizer</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a th:href="@{/}" class="nav-item">
+                    <i class="fa-solid fa-border-all"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a th:href="@{/simulacion}" class="nav-item">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Telemetría</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-dollar-sign"></i>
+                    <span>Finanzas</span>
+                </a>
+                <a th:href="@{/reglas}" class="nav-item active">
+                    <i class="fa-solid fa-sliders"></i>
+                    <span>Reglas de Negocio</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-file-invoice"></i>
+                    <span>Auditoría</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-chart-simple"></i>
+                    <span>Reportes</span>
+                </a>
+                <a th:href="@{/}" class="nav-item">
+                    <i class="fa-solid fa-users-gear"></i>
+                    <span>Gestión de Usuarios</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Configuración</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="status-indicator">
+                    <span class="dot"></span>
+                    <span>Sistema Activo</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Contenido Principal -->
+        <main class="content">
+            <header class="content-header">
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Buscar en el sistema...">
+                </div>
+                <div class="header-actions">
+                    <div class="currency-switch">
+                        <button>S/ PEN</button>
+                        <button class="active">$ USD</button>
+                        <button>€ EUR</button>
+                    </div>
+                    <button class="icon-btn notification"><i class="fa-solid fa-bell"></i><span class="badge"></span></button>
+                    <div class="user-pill">
+                        <div class="user-avatar-small"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div class="user-data">
+                            <span class="name">Admin Usuario</span>
+                            <span class="role">Administrador</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </div>
+                </div>
+            </header>
+
+            <section class="page-content">
+                <div class="title-row">
+                    <div>
+                        <h2>Reglas de Negocio</h2>
+                        <p>Configuración de umbrales y acciones automatizadas</p>
+                    </div>
+                    <button class="btn-primary" id="btnNuevaRegla"><i class="fa-solid fa-plus"></i> Nueva Regla</button>
+                </div>
+
+
+
+                <!-- Lista de Reglas -->
+                <div class="reglas-list">
+                    <div class="regla-card" th:each="r : ${reglas}">
+                        <div class="regla-main">
+                            <div class="regla-info">
+                                <div class="regla-title">
+                                    <h3 th:text="${r.nombre}">Nombre de la Regla</h3>
+                                    <span th:class="'tag ' + ${r.tipoClass}" th:text="${r.tipo}">Tipo</span>
+                                    <span th:class="${r.activa} ? 'status active' : 'status inactive'" th:text="${r.activa} ? 'Activa' : 'Inactiva'">Activa</span>
+                                </div>
+                                <div class="regla-details">
+                                    <div class="detail">
+                                        <span class="lbl">ID</span>
+                                        <span class="val" th:text="${r.id}">R-001</span>
+                                    </div>
+                                    <div class="detail">
+                                        <span class="lbl">Umbral</span>
+                                        <span class="val" th:text="${r.umbral}">8000</span>
+                                    </div>
+                                    <div class="detail">
+                                        <span class="lbl">Acción</span>
+                                        <span class="val" th:text="${r.accion}">Notificación al Admin</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="regla-actions">
+                                <button class="act-btn"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <form th:action="@{/reglas/eliminar}" method="post" style="display:inline;">
+                                    <input type="hidden" name="id" th:value="${r.id}">
+                                    <button type="submit" class="act-btn delete"><i class="fa-solid fa-trash-can"></i></button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- MODAL NUEVA REGLA -->
+    <div class="modal-overlay" id="modalRegla">
+        <div class="modal-content">
+            <div class="modal-header">
+                <i class="fa-solid fa-circle-exclamation gold"></i>
+                <h3>Nueva Regla de Negocio</h3>
+            </div>
+            <form th:action="@{/reglas/crear}" th:object="${nuevaRegla}" method="post" id="reglaForm">
+                <div class="form-group">
+                    <label>Nombre de la Regla</label>
+                    <input type="text" th:field="*{nombre}" placeholder="ej. Alerta de Consumo Crítico" required>
+                </div>
+                <div class="form-group">
+                    <label>Tipo</label>
+                    <select th:field="*{tipo}">
+                        <option value="Energía">Energía</option>
+                        <option value="Agua">Agua</option>
+                        <option value="Costo">Costo</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Umbral</label>
+                    <input type="number" th:field="*{umbral}" value="0" required>
+                </div>
+                <div class="form-group">
+                    <label>Acción</label>
+                    <input type="text" th:field="*{accion}" placeholder="ej. Enviar notificación" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" id="btnCerrarModal">Cancelar</button>
+                    <button type="submit" class="btn-submit">Crear Regla</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script th:src="@{/js/reglas.js}"></script>
+</body>
+</html>
